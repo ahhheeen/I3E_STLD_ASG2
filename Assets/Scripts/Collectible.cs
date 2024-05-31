@@ -1,56 +1,39 @@
 using UnityEngine;
 using StarterAssets;
 
+public enum CollectibleType
+{
+    Speed,
+    Jump
+}
+
 public class Collectible : MonoBehaviour
 {
-    public virtual void Collected(GameObject player)
-    {
-        // Base implementation (can be empty)
-    }
+    public CollectibleType collectibleType;
+
+    public float speedIncreaseAmount = 2.0f;  // Amount to increase speed
+    public float jumpHeightIncreaseAmount = 2.0f;  // Amount to increase jump height
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            Collected(other.gameObject);
+            FirstPersonController controller = other.GetComponent<FirstPersonController>();
+
+            if (controller != null)
+            {
+                switch (collectibleType)
+                {
+                    case CollectibleType.Speed:
+                        controller.MoveSpeed += speedIncreaseAmount;
+                        break;
+                    case CollectibleType.Jump:
+                        controller.JumpHeight += jumpHeightIncreaseAmount;
+                        break;
+                }
+            }
+
+            Destroy(gameObject); // Destroy the collectible after collection
         }
-    }
-}
-
-public class SpeedCollectible : Collectible
-{
-    public float speedIncreaseAmount = 2.0f;  // Amount to increase speed
-
-    public override void Collected(GameObject player)
-    {
-        FirstPersonController controller = player.GetComponent<FirstPersonController>();
-
-        if (controller != null)
-        {
-            // Increase player's movement speed
-            controller.MoveSpeed += speedIncreaseAmount;
-        }
-
-        // Destroy the collectible after collection
-        Destroy(gameObject);
-    }
-}
-
-public class JumpCollectible : Collectible
-{
-    public float jumpHeightIncreaseAmount = 2.0f;  // Amount to increase jump height
-
-    public override void Collected(GameObject player)
-    {
-        FirstPersonController controller = player.GetComponent<FirstPersonController>();
-
-        if (controller != null)
-        {
-            // Increase player's jump height
-            controller.JumpHeight += jumpHeightIncreaseAmount;
-        }
-
-        // Destroy the collectible after collection
-        Destroy(gameObject);
     }
 }
